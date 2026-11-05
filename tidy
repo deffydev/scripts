@@ -8,6 +8,7 @@ pictures=$(xdg-user-dir PICTURES)
 videos=$(xdg-user-dir VIDEOS)
 music=$(xdg-user-dir MUSIC)
 documents=$(xdg-user-dir DOCUMENTS)
+apps="$HOME/Applications"
 
 mode="preview"
 if [[ "$1" == "--go" ]]; then
@@ -31,7 +32,8 @@ for file in "$downloads"/*; do
         jpg|jpeg|png|gif|webp)        target="$pictures" ;;
         mp4|mkv|mov|webm)             target="$videos" ;;
         mp3|wav|flac|m4a|ogg)         target="$music" ;;
-        pdf|txt|doc|docx|odt|csv)     target="$documents" ;;
+        pdf|txt|doc|docx|odt|csv|html|json|md) target="$documents" ;;
+        appimage)                     target="$apps" ;;
         *)                            continue ;;   # everything else (zips, installers) stays put
     esac
 
