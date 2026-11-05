@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -e
+
+echo "==> Updating system packages"
+sudo pacman -Syu
+
+echo "==> Updating AUR packages"
+paru -Sua
+
+echo "==> Cleaning old package files (keeping the last 2 versions)"
+sudo paccache -rk2
+
+echo "==> All done!"

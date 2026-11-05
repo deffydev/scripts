@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# tidy: move files from Downloads into my real folders (Pictures, Videos, Music, Documents)
+# Run "tidy" to preview, or "tidy --go" to actually move files.
+
+# Ask the system where my folders are instead of hardcoding paths
+downloads=$(xdg-user-dir DOWNLOAD)
+pictures=$(xdg-user-dir PICTURES)
+videos=$(xdg-user-dir VIDEOS)
+music=$(xdg-user-dir MUSIC)
+documents=$(xdg-user-dir DOCUMENTS)
+
+mode="preview"
+if [[ "$1" == "--go" ]]; then
+    mode="move"
+fi
+
+echo "==> Tidying $downloads ($mode mode)"
+count=0
+
+for file in "$downloads"/*; do
+    # skip anything that isn't a normal file (like folders)
+    if [[ ! -f "$file" ]]; then
+        continue
+    fi
+
+    name=$(basename "$file")
+    ext="${name##*.}"
+    ext="${ext,,}"
+
+    case "$ext" in
+        jpg|jpeg|png|gif|webp)        target="$pictures" ;;
+        mp4|mkv|mov|webm)             target="$videos" ;;
+        mp3|wav|flac|m4a|ogg)         target="$music" ;;
+        pdf|txt|doc|docx|odt|csv)     target="$documents" ;;
+        *)                            continue ;;   # everything else (zips, installers) stays put
+    esac
+
+    # never overwrite: if a file with that name is already there, skip it
+    if [[ -e "$target/$name" ]]; then
+        echo "Skipped:     $name (already in $(basename "$target"))"
+        continue
+    fi
+
+    if [[ "$mode" == "move" ]]; then
+        mkdir -p "$target"
+        mv -n "$file" "$target/"
+        echo "Moved:       $name -> $(basename "$target")/"
+    else
+        echo "Would move:  $name -> $(basename "$target")/"
+    fi
+
+    count=$((count + 1))
+done
+
+if [[ $count -eq 0 ]]; then
+    echo "==> Nothing to tidy!"
+elif [[ "$mode" == "preview" ]]; then
+    echo "==> $count file(s) would move. Run 'tidy --go' to do it."
+else
+    echo "==> Done! Moved $count file(s)."
+fi
+

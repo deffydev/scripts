@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# temps: quick look at my CPU/GPU temps and Linux disk space
+
+data=$(sensors -j 2>/dev/null)
+
+cpu=$(echo "$data" | jq '."k10temp-pci-00c3".Tctl.temp1_input | round')
+gpu=$(echo "$data" | jq '."amdgpu-pci-0300".edge.temp1_input | round')
+hotspot=$(echo "$data" | jq '."amdgpu-pci-0300".junction.temp2_input | round')
+power=$(echo "$data" | jq '."amdgpu-pci-0300".PPT.power1_average | round')
+
+echo "==> Temperatures"
+echo "CPU:          ${cpu}°C"
+echo "GPU:          ${gpu}°C"
+echo "GPU hotspot:  ${hotspot}°C"
+echo "GPU power:    ${power} W"
+echo
+
+# disk NAME FOLDER: prints used/total, percent and free space for one Linux partition
+disk() {
+    read -r used size pct avail < <(df -h --output=used,size,pcent,avail "$2" | tail -n 1)
+    printf "%-24s %5s of %-5s  %4s used  (%s free)\n" "$1" "$used" "$size" "$pct" "$avail"
+}
+
+echo "==> Linux disk space"
+disk "System (PNY SSD)"        /
+disk "Steam games (Samsung)"   /mnt/storage
