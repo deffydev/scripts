@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tidy: move files from Downloads into my real folders (Pictures, Videos, Music, Documents)
+# tidy: move files from Downloads into my real folders (Pictures, Videos, Music, Documents, Applications)
 # Run "tidy" to preview, or "tidy --go" to actually move files.
 
 # Ask the system where my folders are instead of hardcoding paths
